@@ -14,4 +14,7 @@ router.route('/organizationsignin')
 router.route('/validateToken')
     .get(asyncHandler(authController.validateToken));
 
+router.route('/add-client')
+    .post(signupValidator, asyncHandler(checkEmail), asyncHandler(authController.createClient));
+
 module.exports = router;

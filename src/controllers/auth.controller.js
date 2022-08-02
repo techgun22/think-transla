@@ -1,4 +1,6 @@
 const User = require("../models/user.model");
+const Client = require("../models/client.model");
+
 const {
   hash: hashPassword,
   compare: comparePassword,
@@ -36,6 +38,55 @@ exports.signup = (req, res) => {
       });
     }
   });
+};
+
+exports.createClient = (req, res) => {
+  let token = req.headers["x-access-token"] || req.headers["authorization"];
+  if (typeof token == "undefined") {
+    res.status(500).send({
+      status: "error",
+      message: "Bearer Token is required",
+    });
+  } else {
+    token = token.replace(/^Bearer\s+/, "");
+    const decoded = decodeToken(token);
+
+    if (decoded != "invalid") {
+      const { firstname, lastname, email, password } = req.body;
+      const hashedPassword = hashPassword(password.trim());
+
+      const client = new Client(
+        firstname.trim(),
+        lastname.trim(),
+        email.trim(),
+        hashedPassword,
+        decoded["id"]
+      );
+
+      Client.createClient(client, (err, data) => {
+        if (err) {
+          res.status(500).send({
+            status: "error",
+            message: err.message,
+          });
+        } else {
+          const token = generateToken(data.id);
+          res.status(201).send({
+            status: "success",
+            data: {
+              token,
+              data,
+            },
+          });
+        }
+      });
+    } else {
+      res.status(401).send({
+        status: "error",
+        message: "Token is invalid",
+      });
+    }
+  }
 };
 
 exports.signin = (req, res) => {
@@ -79,39 +130,45 @@ exports.signin = (req, res) => {
 
 exports.validateToken = (req, res) => {
   let token = req.headers["x-access-token"] || req.headers["authorization"];
-
-  token = token.replace(/^Bearer\s+/, "");
-  const decoded = decodeToken(token);
-
-  if (decoded != "invalid") {
-    User.findByID(decoded["id"], (err, data) => {
-      if (err) {
-        res.status(500).send({
-          status: "error",
-          message: err.message,
-        });
-      } else {
-        res.status(201).send({
-          status: "success",
-          data: {
-            id: decoded["id"],
-            firstname: data.firstname,
-            firstname: data.firstname,
-            lastname: data.lastname,
-            email: data.email,
-          },
-        });
-      }
+  if (typeof token == "undefined") {
+    res.status(500).send({
+      status: "error",
+      message: "Bearer Token is required",
     });
-    /*var data = User.findByID(decoded["id"]);
+  } else {
+    token = token.replace(/^Bearer\s+/, "");
+    const decoded = decodeToken(token);
+
+    if (decoded != "invalid") {
+      User.findByID(decoded["id"], (err, data) => {
+        if (err) {
+          res.status(500).send({
+            status: "error",
+            message: err.message,
+          });
+        } else {
+          res.status(201).send({
+            status: "success",
+            data: {
+              id: decoded["id"],
+              firstname: data.firstname,
+              firstname: data.firstname,
+              lastname: data.lastname,
+              email: data.email,
+            },
+          });
+        }
+      });
+      /*var data = User.findByID(decoded["id"]);
     res.status(201).send({
       status: "success",
       data: data.firstname,
     });*/
-  } else {
-    res.status(401).send({
-      status: "error",
-      message: "Token is invalid",
-    });
+    } else {
+      res.status(401).send({
+        status: "error",
+        message: "Token is invalid",
+      });
+    }
   }
 };
