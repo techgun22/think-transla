@@ -22,11 +22,15 @@ INSERT INTO users VALUES(null, ?, ?, ?, ?, NOW())
 const findUserByEmail = `
 SELECT * FROM users WHERE email = ?
 `;
+const findUserByID = `
+SELECT * FROM users WHERE id = 3
+`;
 
 module.exports = {
     createDB,
     dropDB,
     createTableUSers,
     createNewUser,
-    findUserByEmail
+    findUserByEmail,
+    findUserByID
 };

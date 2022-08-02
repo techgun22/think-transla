@@ -1,0 +1,8 @@
+{
+  "appService.zipIgnorePattern": [
+    "node_modules{,/**}",
+    ".vscode{,/**}"
+  ],
+  "appService.defaultWebAppToDeploy": "/subscriptions/844849a7-5f37-4c48-81e5-5ce77c5f6bf9/microsoft.web/sites/subscriptions/844849a7-5f37-4c48-81e5-5ce77c5f6bf9/resourceGroups/think-transcending/providers/Microsoft.Web/sites/Think-transcending",
+  "appService.deploySubpath": "."
+}

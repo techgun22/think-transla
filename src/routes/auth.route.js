@@ -5,10 +5,13 @@ const { signup: signupValidator, signin: signinValidator } = require('../validat
 const authController = require('../controllers/auth.controller');
 
 
-router.route('/signup')
+router.route('/organizationSignup')
     .post(signupValidator, asyncHandler(checkEmail), asyncHandler(authController.signup));
 
-router.route('/signin')
+router.route('/organizationsignin')
     .post(signinValidator, asyncHandler(authController.signin));
+
+router.route('/validateToken')
+    .get(asyncHandler(authController.validateToken));
 
 module.exports = router;

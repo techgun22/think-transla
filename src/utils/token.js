@@ -8,6 +8,7 @@ const decode = (token) => {
     try {
         return jwt.verify(token, JWT_SECRET_KEY)
     } catch (error) {
+        return "invalid";
         logger.error(error);
     }
 };
