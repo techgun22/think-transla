@@ -39,8 +39,20 @@ const findUserByEmail = `
 SELECT * FROM users WHERE email = ?
 `;
 
+const findClientByEmail = `
+SELECT * FROM clients WHERE email = ?
+`;
+
 const findUserByID = `
-SELECT * FROM users WHERE id = 3
+SELECT * FROM users WHERE id = ?
+`;
+
+const findClientByID = `
+SELECT * FROM clients WHERE id = ?
+`;
+
+const getClientsforOrganization = `
+SELECT * FROM clients WHERE organizationID = ?
 `;
 
 module.exports = {
@@ -51,5 +63,8 @@ module.exports = {
     createNewUser,
     findUserByEmail,
     findUserByID,
-    createNewClient
+    createNewClient,
+    findClientByEmail,
+    findClientByID,
+    getClientsforOrganization
 };

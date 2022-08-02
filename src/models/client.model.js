@@ -1,5 +1,5 @@
 const db = require('../config/db.config');
-const { createNewClient: createNewClientQuery } = require('../database/queries');
+const { getClientsforOrganization:getClientsforOrganizationQuery, createNewClient: createNewClientQuery, findClientByEmail: findClientByEmailQuery,findClientByID:findClientByIDQuery } = require('../database/queries');
 const { logger } = require('../utils/logger');
 
 class Client {
@@ -33,6 +33,51 @@ class Client {
                     organizationID: newClient.organizationID
                 });
         });
+    }
+
+    static getClientsforOrganization(ID, cb) {
+        db.query(getClientsforOrganizationQuery, ID, (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            if (res.length) {
+                cb(null, res);
+                return;
+            }
+            cb({ kind: "not_found" }, null);
+        })
+    }
+
+    static findByEmail(email, cb) {
+        db.query(findClientByEmailQuery, email, (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            if (res.length) {
+                cb(null, res[0]);
+                return;
+            }
+            cb({ kind: "not_found" }, null);
+        })
+    }
+
+    static findByID(id, cb) {
+        db.query(findClientByIDQuery, id, (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            if (res.length) {
+                cb(null, res[0]);
+                return;
+            }
+            cb({ kind: "not_found" }, null);
+        })
     }
 
 }

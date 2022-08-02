@@ -28,7 +28,7 @@ exports.signup = (req, res) => {
         message: err.message,
       });
     } else {
-      const token = generateToken(data.id);
+      const token = generateToken(data.id,'organization');
       res.status(201).send({
         status: "success",
         data: {
@@ -52,6 +52,13 @@ exports.createClient = (req, res) => {
     const decoded = decodeToken(token);
 
     if (decoded != "invalid") {
+      if(decoded['role']!='organization'){
+        res.status(500).send({
+          status: "error",
+          message: "Only organizations can create clients",
+        });
+      }
+      else{
       const { firstname, lastname, email, password } = req.body;
       const hashedPassword = hashPassword(password.trim());
 
@@ -70,7 +77,7 @@ exports.createClient = (req, res) => {
             message: err.message,
           });
         } else {
-          const token = generateToken(data.id);
+          const token = generateToken(data.id,'client');
           res.status(201).send({
             status: "success",
             data: {
@@ -79,7 +86,7 @@ exports.createClient = (req, res) => {
             },
           });
         }
-      });
+      });}
     } else {
       res.status(401).send({
         status: "error",
@@ -91,41 +98,58 @@ exports.createClient = (req, res) => {
 
 exports.signin = (req, res) => {
   const { email, password } = req.body;
+  var resData="";
   User.findByEmail(email.trim(), (err, data) => {
+    resData=data;
     if (err) {
-      if (err.kind === "not_found") {
-        res.status(404).send({
-          status: "error",
-          message: `User with email ${email} was not found`,
+        Client.findByEmail(email.trim(), (err1, data1) => {
+          if (err1) {
+            if (err1.kind === "not_found") {
+              res.status(404).send({
+                status: "error",
+                message: `User with email ${email} was not found`,
+              });
+              return;
+            }
+            res.status(500).send({
+              status: "error",
+              message: err1.message,
+            });
+            return;
+          }
+          else{
+            resData=data1;
+            signInRestRes(resData,res,'client');
+          }
         });
-        return;
-      }
-      res.status(500).send({
-        status: "error",
-        message: err.message,
+    }
+
+    if (resData) {
+      signInRestRes(resData,res,'organization');
+    }
+
+  });
+
+  function signInRestRes(resData,res,role){
+    if (comparePassword(password.trim(), resData.password)) {
+      const token = generateToken(resData.id,role);
+      res.status(200).send({
+        status: "success",
+        data: {
+          token,
+          firstname: resData.firstname,
+          lastname: resData.lastname,
+          email: resData.email,
+          role:role
+        },
       });
       return;
     }
-    if (data) {
-      if (comparePassword(password.trim(), data.password)) {
-        const token = generateToken(data.id);
-        res.status(200).send({
-          status: "success",
-          data: {
-            token,
-            firstname: data.firstname,
-            lastname: data.lastname,
-            email: data.email,
-          },
-        });
-        return;
-      }
-      res.status(401).send({
-        status: "error",
-        message: "Incorrect password",
-      });
-    }
-  });
+    res.status(401).send({
+      status: "error",
+      message: "Incorrect password",
+    });
+  }
 };
 
 exports.validateToken = (req, res) => {
@@ -140,30 +164,52 @@ exports.validateToken = (req, res) => {
     const decoded = decodeToken(token);
 
     if (decoded != "invalid") {
-      User.findByID(decoded["id"], (err, data) => {
-        if (err) {
-          res.status(500).send({
-            status: "error",
-            message: err.message,
-          });
-        } else {
-          res.status(201).send({
-            status: "success",
-            data: {
-              id: decoded["id"],
-              firstname: data.firstname,
-              firstname: data.firstname,
-              lastname: data.lastname,
-              email: data.email,
-            },
-          });
-        }
-      });
-      /*var data = User.findByID(decoded["id"]);
-    res.status(201).send({
-      status: "success",
-      data: data.firstname,
-    });*/
+      if(decoded['role']=='organization'){
+        User.findByID(decoded["id"], (err, data) => {
+          if (err) {
+            res.status(500).send({
+              status: "error",
+              message: err.message,
+            });
+          } else {
+            res.status(201).send({
+              status: "success",
+              data: {
+                id: decoded['id'],
+                firstname: data.firstname,
+                firstname: data.firstname,
+                lastname: data.lastname,
+                email: data.email,
+                role:decoded['role']
+              },
+            });
+          }
+        });
+      }
+      if(decoded['role']=='client'){
+        Client.findByID(decoded["id"], (err, data) => {
+          if (err) {
+            res.status(500).send({
+              status: "error",
+              message: err.message,
+            });
+          } else {
+            res.status(201).send({
+              status: "success",
+              data: {
+                id: decoded['id'],
+                firstname: data.firstname,
+                firstname: data.firstname,
+                lastname: data.lastname,
+                email: data.email,
+                role:decoded['role']
+              },
+            });
+          }
+        });
+      }
+     
+      
     } else {
       res.status(401).send({
         status: "error",
