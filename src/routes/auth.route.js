@@ -29,7 +29,7 @@ router.route('/delete-client')
     .post( asyncHandler(bearerToken),asyncHandler(onlyOrganization), asyncHandler(clientController.deleteClient));
 
 router.route('/get-client')
-    .get( asyncHandler(bearerToken),asyncHandler(onlyOrganization), asyncHandler(clientController.getClient));
+    .post( asyncHandler(bearerToken),asyncHandler(onlyOrganization), asyncHandler(clientController.getClient));
 
 router.route('/edit-client')
     .post( asyncHandler(bearerToken),asyncHandler(onlyOrganization), asyncHandler(clientController.editClient));
