@@ -7,6 +7,7 @@ const onlyOrganization = require('../middlewares/onlyOrganization');
 const { signup: signupValidator, signin: signinValidator } = require('../validators/auth');
 const authController = require('../controllers/auth.controller');
 const clientController = require('../controllers/clientController');
+const membershipController = require('../controllers/membershipController');
 
 
 router.route('/organizationSignup')
@@ -24,5 +25,22 @@ router.route('/add-client')
 router.route('/get-clients')
     .get( asyncHandler(bearerToken),asyncHandler(onlyOrganization), asyncHandler(clientController.getClients));
 
+router.route('/delete-client')
+    .post( asyncHandler(bearerToken),asyncHandler(onlyOrganization), asyncHandler(clientController.deleteClient));
 
+router.route('/get-client')
+    .get( asyncHandler(bearerToken),asyncHandler(onlyOrganization), asyncHandler(clientController.getClient));
+
+router.route('/edit-client')
+    .post( asyncHandler(bearerToken),asyncHandler(onlyOrganization), asyncHandler(clientController.editClient));
+
+router.route('/edit-client-password')
+    .post( asyncHandler(bearerToken),asyncHandler(onlyOrganization), asyncHandler(clientController.editClientPassword));
+
+router.route('/add-membership')
+    .post( asyncHandler(bearerToken),asyncHandler(onlyOrganization), asyncHandler(membershipController.addMembership));
+
+
+    router.route('/get-membership')
+    .get(  asyncHandler(membershipController.getMembership));
 module.exports = router;

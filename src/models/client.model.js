@@ -1,5 +1,5 @@
 const db = require('../config/db.config');
-const { getClientsforOrganization:getClientsforOrganizationQuery, createNewClient: createNewClientQuery, findClientByEmail: findClientByEmailQuery,findClientByID:findClientByIDQuery } = require('../database/queries');
+const {EditClientPassword:EditClientPasswordQuery,GetClient:GetClientQuery,EditClient:EditClientQuery, deleteClient:deleteClientQuery,getClientsforOrganization:getClientsforOrganizationQuery, createNewClient: createNewClientQuery, findClientByEmail: findClientByEmailQuery,findClientByID:findClientByIDQuery } = require('../database/queries');
 const { logger } = require('../utils/logger');
 
 class Client {
@@ -47,6 +47,42 @@ class Client {
                 return;
             }
             cb({ kind: "not_found" }, null);
+        })
+    }
+
+    static deleteClient(email, cb) {
+        db.query(deleteClientQuery, email, (err, res) => {
+            cb(null, null);
+            return;
+        })
+    }
+
+    static getClient(email, cb) {
+        db.query(GetClientQuery, email, (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            if (res.length) {
+                cb(null, res);
+                return;
+            }
+            cb({ kind: "not_found" }, null);
+        })
+    }
+
+    static editClient([email,firstname,lastname,country,phone,profile,timeZone,bio,website], cb) {
+        db.query(EditClientQuery,[firstname,lastname,country,phone,profile,timeZone,bio,website,email], (err, res) => {
+            cb(null, null);
+            return;
+        })
+    }
+
+    static editClientPassword([email,password], cb) {
+        db.query(EditClientPasswordQuery,[password,email], (err, res) => {
+            cb(null, null);
+            return;
         })
     }
 

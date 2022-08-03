@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     created_on TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
-)
+    
+    )
 `;
 
 const createTableClients = `
@@ -23,7 +24,13 @@ CREATE TABLE IF NOT EXISTS clients (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     organizationID INT NOT NULL,
-    created_on TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
+    created_on TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    country VARCHAR(50) NULL,
+    phone INT NULL,
+    profile VARCHAR(50) NULL,
+    timeZone VARCHAR(50) NULL,
+    bio VARCHAR(250) NULL,
+    website VARCHAR(250) NULL
 )
 `;
 
@@ -32,7 +39,7 @@ INSERT INTO users VALUES(null, ?, ?, ?, ?, NOW())
 `;
 
 const createNewClient = `
-INSERT INTO clients VALUES(null, ?, ?, ?, ?, ?, NOW())
+INSERT INTO clients VALUES(null, ?, ?, ?, ?, ?, NOW(),null,null,null,null,null,null)
 `;
 
 const findUserByEmail = `
@@ -55,6 +62,26 @@ const getClientsforOrganization = `
 SELECT * FROM clients WHERE organizationID = ?
 `;
 
+const deleteClient = `
+DELETE FROM clients WHERE email = ?
+`;
+
+const EditClient = `
+UPDATE clients
+SET firstname = ?, lastname= ?, country= ?, phone= ?, profile= ?, timeZone= ?, bio= ?, website= ?
+WHERE email = ?;
+`;
+
+const EditClientPassword = `
+UPDATE clients
+SET password = ?
+WHERE email = ?;
+`;
+
+const GetClient = `
+SELECT firstname,lastname,country,phone,profile,timeZone,bio,website FROM clients WHERE email = ?;
+`;
+
 module.exports = {
     createDB,
     createTableClients,
@@ -66,5 +93,9 @@ module.exports = {
     createNewClient,
     findClientByEmail,
     findClientByID,
-    getClientsforOrganization
+    getClientsforOrganization,
+    deleteClient,
+    EditClient,
+    GetClient,
+    EditClientPassword
 };
