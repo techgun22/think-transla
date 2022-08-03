@@ -79,7 +79,7 @@ WHERE email = ?;
 `;
 
 const GetClient = `
-SELECT firstname,lastname,country,phone,profile,timeZone,bio,website FROM clients WHERE email = ?;
+SELECT firstname,lastname,country,phone,profile,timeZone,bio,website FROM clients WHERE id = ?;
 `;
 
 module.exports = {
