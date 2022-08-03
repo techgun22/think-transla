@@ -69,7 +69,7 @@ DELETE FROM clients WHERE email = ?
 const EditClient = `
 UPDATE clients
 SET firstname = ?, lastname= ?, country= ?, phone= ?, profile= ?, timeZone= ?, bio= ?, website= ?
-WHERE email = ?;
+WHERE id = ?;
 `;
 
 const EditClientPassword = `
