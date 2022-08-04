@@ -42,5 +42,5 @@ router.route('/add-membership')
 
 
     router.route('/get-membership')
-    .get(  asyncHandler(membershipController.getMembership));
+    .post(  asyncHandler(membershipController.getMembership));
 module.exports = router;
