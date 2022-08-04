@@ -75,7 +75,7 @@ WHERE id = ?;
 const EditClientPassword = `
 UPDATE clients
 SET password = ?
-WHERE email = ?;
+WHERE id = ?;
 `;
 
 const GetClient = `
