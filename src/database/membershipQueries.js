@@ -19,9 +19,14 @@ const getMembershipById= `
 SELECT * FROM memberships WHERE id = ?
 `;
 
+const getMemberships= `
+SELECT * FROM memberships
+`;
+
 
 module.exports = {
     createTableMembership,
     createNewMembership,
-    getMembershipById
+    getMembershipById,
+    getMemberships
 };

@@ -1,5 +1,5 @@
 const db = require('../config/db.config');
-const {getMembershipById:getMembershipByIdQuery,createNewMembership:createNewMembershipQuery } = require('../database/membershipQueries');
+const {getMemberships:getMembershipsQuery,getMembershipById:getMembershipByIdQuery,createNewMembership:createNewMembershipQuery } = require('../database/membershipQueries');
 const { logger } = require('../utils/logger');
 
 class Membership {
@@ -44,6 +44,21 @@ class Membership {
             }
             if (res.length) {
                 cb(null, res[0]);
+                return;
+            }
+            cb({ kind: "not_found" }, null);
+        })
+    }
+
+     static getMemberships( cb) {
+        db.query(getMembershipsQuery, (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            if (res.length) {
+                cb(null, res);
                 return;
             }
             cb({ kind: "not_found" }, null);

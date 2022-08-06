@@ -41,6 +41,10 @@ router.route('/add-membership')
     .post( asyncHandler(bearerToken),asyncHandler(onlyOrganization), asyncHandler(membershipController.addMembership));
 
 
-    router.route('/get-membership')
+router.route('/get-membership')
     .post(  asyncHandler(membershipController.getMembership));
+
+router.route('/get-memberships')
+    .get(  asyncHandler(membershipController.getMemberships));
+
 module.exports = router;
