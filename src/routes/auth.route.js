@@ -8,6 +8,7 @@ const { signup: signupValidator, signin: signinValidator } = require('../validat
 const authController = require('../controllers/auth.controller');
 const clientController = require('../controllers/clientController');
 const membershipController = require('../controllers/membershipController');
+const paymentController = require('../controllers/payment.controller');
 
 
 router.route('/organizationSignup')
@@ -46,5 +47,11 @@ router.route('/get-membership')
 
 router.route('/get-memberships')
     .get(  asyncHandler(membershipController.getMemberships));
+
+router.route('/create-payment-intent')
+    .post(  asyncHandler(paymentController.createpaymentIntent));
+
+router.route('/charge-payment')
+    .post(  asyncHandler(paymentController.chargePayment));
 
 module.exports = router;
